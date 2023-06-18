@@ -16,17 +16,17 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
   const MDXContent = useMDXComponent(post.body.code);
 
   return (
-    <article className="mx-auto max-w-4xl py-8">
+    <article className="mx-auto max-w-fit py-8">
       <div className="mb-8 text-center">
         <time dateTime={post.date} className="mb-1 text-base text-gray-600">
-          {format(parseISO(post.date), 'LLLL d, yyyy')}
+          {format(parseISO(post.date), 'd LLLL, yyyy')}
         </time>
         <div className="mb-1 text-base text-gray-600">
           {post.readTime.text}
         </div>
         <h1 className="text-3xl font-bold px-8">{post.title}</h1>
       </div>
-      <div className="[&>*]:mb-3 [&>*:last-child]:mb-0 px-8 prose prose-slate dark:prose-invert prose-a:text-blue-700 mx-auto" >
+      <div className="[&>*]:mb-3 [&>*:last-child]:mb-0 px-4 prose prose-slate dark:prose-invert prose-a:text-blue-700 mx-auto" >
         <MDXContent />
       </div>
     </article>

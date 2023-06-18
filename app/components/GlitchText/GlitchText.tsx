@@ -30,7 +30,7 @@ const generateRandomLetters = (
       clearInterval(interval);
     }
     iterations += 1 / (80 / original.length);
-  }, 20);
+  }, 8);
 };
 
 export default function GlitchText<FC>({ original, text, setText }: Props) {
