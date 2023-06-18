@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "./ProfileCard.module.css";
 import GlitchText from "../GlitchText/GlitchText";
+import { motion } from "framer-motion";
 
 const socials = [
   {
@@ -35,14 +36,23 @@ export default function ProfileCard() {
   const [resume, setResume] = useState("Resume 🡲");
   const [projects, setProjects] = useState("Projects 🡲");
   const [blog, setBlog] = useState("Blog 🡲");
+  const [selected, setSelected] = useState(false);
   const date = new Date();
   return (
     <main>
-      <div className={styles.container}>
-        {/* <div className={styles.backblur}></div> */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.2 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 0.8,
+          delay: 0.5,
+          ease: [0, 0.71, 0.2, 1.01],
+        }}
+        className={styles.container}
+      >
         <div className="flex justify-between px-5 pt-2">
           <span className={styles.name}>{date.toJSON().slice(0, 10)}</span>
-          <span className={styles.name}>
+          <span className={styles.name} onClick={() => setSelected(() => true)}>
             <GlitchText original="JDEEPD" text={jdeepd} setText={setJdeepd} />
           </span>
         </div>
@@ -61,12 +71,30 @@ export default function ProfileCard() {
         <div className="flex gap-4 justify-center mt-6">
           {socials.map((info, idx) => (
             <Link target="_blank" key={idx} href={info.uri}>
-              <Image key={idx} width={30} height={40} src={info.image} alt="" />
+              <motion.div
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <Image
+                  key={idx}
+                  width={30}
+                  height={40}
+                  src={info.image}
+                  alt=""
+                />
+              </motion.div>
             </Link>
           ))}
         </div>
         <div className="flex gap-6 mt-4 justify-center">
-          <Link href={"https://drive.google.com/file/d/1uARDiv2rlOX4P4qSQhS4oRjWaC9O5NH1/view"} target="_blank" className="hover:underline hover:text-blue-700">
+          <Link
+            href={
+              "https://drive.google.com/file/d/1uARDiv2rlOX4P4qSQhS4oRjWaC9O5NH1/view"
+            }
+            target="_blank"
+            className="hover:underline hover:text-blue-700"
+          >
             <GlitchText original="Resume 🡲" text={resume} setText={setResume} />
           </Link>
 
@@ -82,7 +110,7 @@ export default function ProfileCard() {
             />
           </Link>
         </div>
-      </div>
+      </motion.div>
     </main>
   );
 }
