@@ -1,0 +1,74 @@
+---
+title: An Interesting Problem and Solution in Probability
+date: 5 March 2021
+---
+
+> Urn A contains 6 red and 4 black balls. Urn B contains
+> 4 red and 6 black balls. One ball is drawn at random from 
+> Urn A and placed in Urn B. Then, one ball is drawn at random
+> from Urn B and placed in Urn A. Now, If one ball is drawn from
+> Urn A, find the probability that it is red. 
+> (Cengage JEE Adv Algebra, 3e)
+
+The question is straight forward. The general way of doing it would be
+to consider each possibility in which the last ball drawn is red and 
+adding all of them up.
+
+As per the solution in the book:
+
+**Case 0**: Red -> Red -> Red
+
+**Case 1**: Black -> Red -> Red
+
+**Case 2**: Red -> Black -> Red
+
+**Case 3**: Black -> Black -> Red
+
+Find the probabilities of each individual cases, and add them up to get $\frac{32}{55}$.
+
+
+#### But there is another way of solving this question. Its not easier, per se, but much more interesting.
+
+Instead of thinking that the balls will either be of one discrete color, think of the color as "non-discrete"
+property, i.e, a ball can have a certain % of red and remaining % of black.
+
+```
+Urn A -> 6 red + 4 black
+```
+
+If I were to choose any random ball from Urn A, I could imagine that ball to have 0.6 red and 0.4 black property (individual probabilities 
+of choosing red and black balls respectively). In other words, as long as you donot observe the color of the picked ball, it will be in
+superposition of both red and black.( *Note that this does not mean that the actual ball is both red and black. It just a simple way of 
+adding above cases(possibilities) in just one step* )
+
+Forget about the balls being discrete. Think only about the color. When I pick any random ball from Urn A and put it in Urn B,
+the probabilities(of selecting colored balls) are hampered in both Urns. A ball is removed from Urn A, so red and black properties decreases.
+A ball is added in Urn B, so red and black properties increases.
+
+```
+Urn A -> (6 - 0.6)red + (4 - 0.4)black = 5.4 red balls + 3.6 black balls = 9 balls
+```
+
+```
+Urn B -> (4 + 0.6)red + (6 + 0.4)black = 4.6 red balls + 6.4 black balls = 11 balls
+```
+
+#### Now, we need to do the same step again; this time, from Urn B to Urn A.
+
+If I were to now pick one random ball from Urn B, it will have (4.6/11 red + 6.4/11 black).
+
+Again, Picking this ball and putting it in Urn A will hamper the probabilities of both urns.
+
+```
+Urn A -> (5.4 + 4.6/11)red balls + (3.6 + 6.4/11)black balls = 10 balls
+```
+
+```
+Urn B -> (4.6 - 4.6/11)red balls + (6.4 - 6.4/11)black balls = 10 balls
+```
+
+Now, it is the last part of the question. If we pick one ball from Urn A, find the probability
+that it is red.
+
+------------
+While the solution might seem a bit long and confusing, if you use diagrams, it will become much shorter(than the first solution).
