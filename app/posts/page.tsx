@@ -1,4 +1,4 @@
-import BlogPost from "../components/bloghead/blogpost";
+import BlogPost from "../components/Bloghead/Blogpost";
 import { compareDesc } from "date-fns";
 import { allPosts, Post } from "contentlayer/generated";
 

@@ -3,16 +3,18 @@
 @tailwind utilities;
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap");
 
 :root {
   font-family: "Inter", sans-serif;
-  --foreground-rgb: 0, 0, 0;
+  --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    font-family: "Inter", sans-serif;
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
@@ -27,4 +29,43 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+code {
+  counter-reset: line;
+}
+
+code > .line::before {
+  counter-increment: line;
+  content: counter(line);
+
+  /* Other styling */
+  display: inline-block;
+  width: 1rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: gray;
+}
+
+code[data-line-numbers-max-digits="2"] > .line::before {
+  width: 2rem;
+}
+
+code[data-line-numbers-max-digits="3"] > .line::before {
+  width: 3rem;
+}
+
+[data-word-id="s"] {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: pink;
+}
+
+[data-word-id="v"] {
+  background-color: rgba(42, 157, 142, 0.209);
+  color: greenyellow;
+}
+
+[data-word-id="i"] {
+  background-color: rgba(138, 157, 42, 0.209);
+  color: yellow;
 }

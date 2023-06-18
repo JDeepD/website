@@ -21,10 +21,12 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
         <time dateTime={post.date} className="mb-1 text-base text-gray-600">
           {format(parseISO(post.date), 'LLLL d, yyyy')}
         </time>
+        <div className="mb-1 text-base text-gray-600">
+          {post.readTime.text}
+        </div>
         <h1 className="text-3xl font-bold px-8">{post.title}</h1>
       </div>
-      {/* <div className="[&>*]:mb-3 [&>*:last-child]:mb-0 px-8" dangerouslySetInnerHTML={{ __html: post.body.html }} /> */}
-      <div className="[&>*]:mb-3 [&>*:last-child]:mb-0 px-8" >
+      <div className="[&>*]:mb-3 [&>*:last-child]:mb-0 px-8 prose prose-slate dark:prose-invert prose-a:text-blue-700 mx-auto" >
         <MDXContent />
       </div>
     </article>
