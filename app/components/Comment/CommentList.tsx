@@ -1,7 +1,7 @@
 "use client"
-import type { Comment } from "../../../lib/interfaces";
+import type { Comment } from "../../api/lib/interfaces";
 import Image from "next/image";
-import distanceToNow from "../../../lib/dateRelative";
+import distanceToNow from "../../api/lib/dateRelative";
 import { useAuth0 } from "@auth0/auth0-react";
 
 type CommentListProps = {
@@ -12,7 +12,7 @@ type CommentListProps = {
 export default function CommentList({ comments, onDelete }: CommentListProps) {
   const { user } = useAuth0();
   return (
-    <div className="space-y-6 mt-10">
+    <div className="space-y-6 mt-10 flex flex-col items-center">
       {comments &&
         comments.map((comment) => {
           const isAuthor = user && user.sub === comment.user.sub;

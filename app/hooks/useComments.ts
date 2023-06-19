@@ -1,4 +1,4 @@
-import type { Comment } from "../../lib/interfaces";
+import type { Comment } from "../api/lib/interfaces";
 import React, { useState } from "react";
 import useSWR from "swr";
 import { useAuth0 } from "@auth0/auth0-react";

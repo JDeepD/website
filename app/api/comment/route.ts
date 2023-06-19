@@ -1,7 +1,7 @@
+import fetchComment from "../lib/fetchComments";
+import createComments from "../lib/createComment";
+import deleteComments from "../lib/deleteComment";
 import { NextRequest, NextResponse } from "next/server";
-import fetchComment from "../../../lib/fetchComments";
-import createComments from "../../../lib/createComment";
-import deleteComments from "../../../lib/deleteComment";
 
 export async function GET(req: NextRequest, res: NextResponse) {
   return fetchComment(req, res);
