@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import type { Comment } from "./interfaces";
 import redis from "./redis";
 import clearUrl from "./clearURL";
 
-async function fetchComments(req: NextApiRequest, res: NextApiResponse) {
+async function fetchComments(req: any, res: any) {
   const url = clearUrl(req.headers.referer as string);
   if (!redis) {
     console.log(redis);

@@ -5,7 +5,7 @@ import clearUrl from "./clearURL";
 import { randomUUID } from "crypto";
 import { Comment } from "./interfaces";
 
-async function createComment(req: NextApiRequest, res: NextApiResponse) {
+async function createComment(req: any, res: any) {
   const url = clearUrl(req.headers.referer as string);
   const { commenttext, postId } = req.body;
   const { authorization } = req.headers;
