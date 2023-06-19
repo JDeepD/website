@@ -37,7 +37,7 @@ export default function GlitchText<FC>({ original, text, setText }: Props) {
   return (
     <span
       onMouseOver={() => generateRandomLetters(original, text, setText)}
-      className="cursor-pointer"
+      className="cursor-pointer font-space"
       id="glitchtext"
     >
       {text}

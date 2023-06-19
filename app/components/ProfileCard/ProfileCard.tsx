@@ -31,15 +31,19 @@ const socials = [
 ];
 
 export default function ProfileCard() {
-  const [jdeepd, setJdeepd] = useState("JDEEPD");
-  const [knowMore, setKnowMore] = useState("Know more 🡲");
-  const [resume, setResume] = useState("Resume 🡲");
-  const [projects, setProjects] = useState("Projects 🡲");
-  const [blog, setBlog] = useState("Blog 🡲");
+  const [jdeepd, setJdeepd] = useState("JDeepD");
+  const [knowMore, setKnowMore] = useState("Know more");
+  const [resume, setResume] = useState("Resume");
+  const [projects, setProjects] = useState("Projects");
+  const [blog, setBlog] = useState("Blog");
   const [selected, setSelected] = useState(false);
   const date = new Date();
   return (
-    <main>
+    <motion.div
+      whileHover={{ scale: 1.2 }}
+      whileTap={{ scale: 1.1 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.2 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -53,16 +57,16 @@ export default function ProfileCard() {
         <div className="flex justify-between px-5 pt-2">
           <span className={styles.name}>{date.toJSON().slice(0, 10)}</span>
           <span className={styles.name} onClick={() => setSelected(() => true)}>
-            <GlitchText original="JDEEPD" text={jdeepd} setText={setJdeepd} />
+            <GlitchText original="JDeepD" text={jdeepd} setText={setJdeepd} />
           </span>
         </div>
         <div className="flex flex-col items-center mt-4">
           <div>
             <span>Student</span> ・ <span>Dev</span> ・ <span>Blogger</span>
           </div>
-          <Link href={"/about"} className="hover:underline hover:text-blue-700">
+          <Link href={"/about"} className="hover:text-blue-700">
             <GlitchText
-              original="Know more 🡲"
+              original="Know more"
               text={knowMore}
               setText={setKnowMore}
             />
@@ -93,24 +97,24 @@ export default function ProfileCard() {
               "https://drive.google.com/file/d/1uARDiv2rlOX4P4qSQhS4oRjWaC9O5NH1/view"
             }
             target="_blank"
-            className="hover:underline hover:text-blue-700"
+            className="hover:text-blue-700"
           >
-            <GlitchText original="Resume 🡲" text={resume} setText={setResume} />
+            <GlitchText original="Resume" text={resume} setText={setResume} />
           </Link>
 
-          <Link href={"/posts"} className="hover:underline hover:text-blue-700">
-            <GlitchText original="Blog 🡲" text={blog} setText={setBlog} />
+          <Link href={"/posts"} className="hover:text-blue-700">
+            <GlitchText original="Blog" text={blog} setText={setBlog} />
           </Link>
 
-          <Link href={"/about"} className="hover:underline hover:text-blue-700">
+          <Link href={"/about"} className="hover:text-blue-700">
             <GlitchText
-              original="Projects 🡲"
+              original="Projects"
               text={projects}
               setText={setProjects}
             />
           </Link>
         </div>
       </motion.div>
-    </main>
+    </motion.div>
   );
 }

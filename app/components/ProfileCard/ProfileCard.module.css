@@ -25,8 +25,17 @@
   animation: changeshadow infinite cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
+/* .container::after {
+  box-shadow: 1px 1px 500px #1d4ed8;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.container::after:hover {
+  opacity: 1;
+} */
+
 .name {
   font-weight: 500;
   font-size: 2rem;
 }
-
