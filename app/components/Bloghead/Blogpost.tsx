@@ -14,7 +14,7 @@ export default function BlogPost({
   readTime: string;
 }) {
   return (
-    <main>
+    <main className="w-full">
       <Link href={url}>
         <div className="text-3xl font-extrabold max-w-fit hover:text-sky-600 transition-all cursor-pointer">
           {title}

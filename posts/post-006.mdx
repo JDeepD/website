@@ -1,0 +1,115 @@
+---
+title: Deploying Express+Prisma application on AWS Lambda using Serverless
+date: 2023-5-26
+---
+
+## Setup
+
+We will be using Serverless for automated deployment. Therefore it is
+recommended to set up Serverless Dashboard and configure an AWS CloudFormation
+Stack for Serverless deploying(just takes a few clicks).
+
+1. Sign Up on [Serverless Dashboard](https://app.serverless.com/)
+2. In the Dashboard, Go to Org > Providers > Add
+
+![Add Provider Image](/post-006/pic1.jpeg)
+
+3. Click Next and **Connect to AWS provider** using the Simple method(Trust me its the simplest).
+
+![Add Provider Image 2](/post-006/pic2.jpeg)
+
+4. After that it will take you to AWS CloudFormation console where you have to create a stack for Serverless.
+
+Once that is done, authenticate your `serverless-cli` with your org
+
+```sh
+sls login
+```
+
+Now, Our Tech stack has Prisma as ORM. And its kindof tricky to integrate that into Lambda.
+First of all, Prisma needs an [engine](https://www.prisma.io/docs/concepts/components/prisma-engines)
+depending on the host Operating System to execute the queries. Prisma automatically detects the host OS
+and downloads this engine whenever you run `prisma generate`. But remember, Lambdas donot do that. You
+have to manually download the Prisma engine for the host OS of AWS Lambda which happens to be Amazon Linux 2
+(based on RHEL). In your `schema.prisma`, add this line to download that engine as well:
+
+```prisma
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+```
+
+The `binaryTargets` tell prisma which engine binaries to download. "native" scans the host OS and automatically
+downloads the required engine. "rhel-openssl-1.0.x" downloads the binary which can run on the instance hosting our Lambda.
+
+The downloaded binaries reside in `node_modules/prisma` directory. Keep that in mind as we will need this binary later on.
+
+Now, coming to the other end of the Techstack, we had Typescript and ESBuild as our build system.
+
+ESBuild outputs the built file(`main.js`) in the `dist/` directory.
+
+Now, we configure `serverless` to include everything in the `dist/` directory when deploying.
+
+In `serverless.yml`
+
+```yml
+package:
+  patterns:
+    - "!./**"
+    - "dist/**"
+```
+
+In our techstack, we used ESBuild for bundling our application. But there is a problem. As per AWS Lambda specification,
+Lambda requires a `handler` function. 
+
+![Add Provider Image 2](/post-006/pic3.jpeg)
+
+We had that function in our unbundled application but once it is bundled,all the function names are mangled and we need another intermediary script which will first import our
+built `main.js` and then export the handler:
+
+```js
+// File: Intermediary.js
+const application = require("./dist/main.js");
+exports.handler = application;
+```
+
+Remember, our `main.js` file does not have any exported function called `"handler"`. All function names are mangled. In AWS Lambda, we need to explicitly provide it a handler function. You can do it through the AWS Lambda console or let serverless handle it for you.
+
+There is a [Serverless ESBuild plugin](https://github.com/floydspace/serverless-esbuild/) for doing exactly this. This plugin
+automatically does the above things and sets up our application such that Lambda can execute it. No fancy configuration
+is required. The docs should be enough to set it up properly. Serverless plugins acts as hooks for the serverless-cli.
+What Serverless ESBuild does is, whenever you run `sls deploy` or `sls package`, it first goes to `serverless.yml` config,
+Sees that it needs to deploy everything in `dist/` directory. So it hooks up somewhat like a pre-deploy state. Before deploying `dist/`, It imports `main.js` and exports the handler like we did above. Also, if you have Serverless Dashboard
+configured, it will also package the `serverless_sdk` alongside it. This allows you to see your API metrics from the Serverless Dashboard itself.
+
+Now that its setup there are a few hiccups left to fix. First of all, to instantiate `PrismaClient()`,
+Prisma needs `schema.prisma` (afterall, thats the place where prisma-client gets the `DATABASE_URL` to connect to).
+
+But ESBuild doesn't include it in the package to be deployed to Lambda. So you need to manually copy your `schema.prisma` into the `dist/` directory. Same goes for the engine binary downloaded earlier.
+
+```
+cp -t dist/ prisma/schema.prisma node_modules/prisma/libquery_engine-rhel-openssl-*
+```
+
+will copy both the files
+and put it in `dist/`
+
+You can simply add it as a script in `package.json`
+
+```json
+  "scripts": {
+    "deploy": "pnpm build && cp -t dist/ prisma/schema.prisma node_modules/prisma/libquery_engine-rhel-openssl-* && sls deploy",
+  }
+```
+
+There are possibly better ways to handle this but I found this was the quickest. Although you are free to explore this
+[SO post with relevant answers](https://stackoverflow.com/questions/73985623/package-files-into-specific-folder-of-application-bundle-when-deploying-to-aws-l)
+
+Once all of it is done, A simple
+
+```sh
+sls deploy
+```
+
+should do the job.

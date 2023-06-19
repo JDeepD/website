@@ -1,6 +1,109 @@
 ---
-title: Deploying Express+Prisma application on AWS Lambda using Serverless 
-date: 6 Mar 2023
+title: A tour of my workflow
+date: 1 February 2022
 ---
 
-Ullamco et nostrud magna commodo nostrud
+My main workflow consists of multiple browser tabs, kitty and a tmux session along with neovim.
+All of them are customised to my liking ofcourse(although kitty is just pretty in default)
+
+For browser, I primarily use Chrome(don't ask me why. Its just that all my accounts get instant login there.)
+I use the [vimium extension](https://chrome.google.com/webstore/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb?hl=en)
+and [Adblock extension](https://chrome.google.com/webstore/detail/adblock-%E2%80%94-best-ad-blocker/gighmmpiobklfepjocnamgkkbiglidom)
+Both of them work out of the box with no configuration required.
+
+
+## Neovim
+
+* I use a lot of plugins but these are the plugins which are just amazing: [lualine](https://github.com/nvim-lualine/lualine.nvim),
+  [quickscope](https://github.com/unblevable/quick-scope), [telescope](https://github.com/nvim-telescope/telescope.nvim), [coc.nvim](https://github.com/neoclide/coc.nvim),
+  [bufferline](https://github.com/akinsho/bufferline.nvim) and [auto-pairs](https://github.com/jiangmiao/auto-pairs).
+
+* Apart from them, I have recently started learning C and coming from Python, its really annoying to add the `;` after the end of each line.
+  So, I have this mapping:
+
+```vim
+"Useful for adding annoying `;` in C/Cpp files
+"Just <Space>; in Normal mode to add `;` to end of line
+let mapleader = " "
+nnoremap <leader>; mz$a;<Esc>`z
+```
+
+![Neovim1](/post-002/1.png)
+![Neovim1](/post-002/2.png)
+
+## Tmux
+
+* Not much is going on here. Most of the configs are copied/stolen(XD) from various people's config.
+* Pretty simple but sexy status bar
+![tmux](/post-002/3.png)
+```sh
+set -g status-style fg=white,bg=black
+set -g status-right "#[bg=default] #[fg=black]#[bg=yellow]  #[fg=white]#[bg=color0] %a %d %b #[fg=yellow]%R "
+set -g status-left "#[fg=yellow]#[bg=color0] #(echo Session:)#{session_name}"
+set -g status-justify centre
+set -g window-status-current-format "#[fg=black]#[bg=brightred] #I #[bg=color0]#[fg=brightgreen] #W "
+set -g window-status-format "#[fg=black]#[bg=yellow] #I #[bg=color0]#[fg=white] #W "
+```
+
+## zsh
+
+* Prompt: [powerlevel10k](https://github.com/romkatv/powerlevel10k)
+* Plugins: [syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting), [auto-suggestions](https://github.com/zsh-users/zsh-autosuggestions)
+* Apart from them, some of the must have tools in this rainbow terminal world are [bat](https://github.com/sharkdp/bat), [exa](https://github.com/ogham/exa), [fd](https://github.com/sharkdp/fd)
+* [fzf](https://github.com/junegunn/fzf) to make your life much easier.
+  There are uncountable usecases of fzf. Here just a few which I collected over time from a lot of people's config(aka stole it)
+```sh
+# Fuzzy find man-pages with sexy colors and preview
+fman() {
+    man -k . | fzf --exact -q "$1" --prompt='man> '  --preview $'echo {} | tr -d \'()\' | awk \'{printf "%s ", $2} {print $1}\' | xargs -r man | col -bx | bat -l man -p --color always' \
+        | tr -d '()' | awk '{printf "%s ", $2} {print $1}' | xargs -r man
+}
+export MANPAGER="sh -c 'col -bx | bat -l man -p --paging always'"
+
+# Fuzzy find files with preview and open in your editor
+fvim(){
+	loc=$(fzf --exact --header="Open File with ${EDITOR}" --preview="bat --color=always {}" --prompt="$EDITOR > " --bind K:preview-page-up,J:preview-page-down) && ${EDITOR:-vim} $loc
+}
+
+# Fuzzy find directories with tree preview and cd into it.
+fcd() {
+	local dir
+	dir="$(fd --type d --no-ignore --no-hidden | fzf --exact --preview="exa --tree {}" --prompt="cd > " --bind tab:preview-page-up,btab:preview-page-down -0)" && cd "${dir}" || return 1
+}
+
+# Credits: https://github.com/umgbhalla/dotstow/blob/main/base/zsh/.config/zsh/funcs.zsh#L574
+# Install/Remove AUR packages with info-preview
+yi() {
+  SELECTED_PKGS="$(yay -Slq | fzf --exact --header='Install packages' -m --height 100% --preview 'yay -Si {1}')"
+  if [ -n "$SELECTED_PKGS" ]; then
+    yay -S $(echo $SELECTED_PKGS)
+  fi
+}
+yr() {
+  SELECTED_PKGS="$(yay -Qsq | fzf --exact --header='Remove packages' -m --height 100% --preview 'yay -Si {1}')"
+  if [ -n "$SELECTED_PKGS" ]; then
+    yay -Rns $(echo $SELECTED_PKGS)
+  fi
+}
+```
+
+## Misc
+
+Sometimes manpages are just too vast if you just want an overview of the command.
+
+Try [cheat.sh](https://github.com/chubin/cheat.sh).You can add this to your `shellrc` :
+
+```sh
+function cheat {
+  curl "https://cheat.sh/$1"
+}
+```
+
+* [vifm file manager](https://github.com/vifm/vifm)
+* [kitty terminal](https://github.com/kovidgoyal/kitty)
+* [zoxide](https://github.com/ajeetdsouza/zoxide)
+
+This is how it looks in the end:
+
+
+![Screenshot](/post-002/4.png)

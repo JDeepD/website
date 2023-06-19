@@ -1,74 +1,251 @@
 ---
-title: An Interesting Problem and Solution in Probability
-date: 5 March 2021
+title: Bitmasking. Managing data in a compact way.
+date: 26 Apr 2022
 ---
 
-> Urn A contains 6 red and 4 black balls. Urn B contains
-> 4 red and 6 black balls. One ball is drawn at random from 
-> Urn A and placed in Urn B. Then, one ball is drawn at random
-> from Urn B and placed in Urn A. Now, If one ball is drawn from
-> Urn A, find the probability that it is red. 
-> (Cengage JEE Adv Algebra, 3e)
+Suppose you are given a situation where you have to produce some output
+which depends on various arguments(flags) that the user provides.
 
-The question is straight forward. The general way of doing it would be
-to consider each possibility in which the last ball drawn is red and 
-adding all of them up.
+For ex, lets say you are given a number and you are asked to do some tests on it:
 
-As per the solution in the book:
+1. Is the number postive?
+2. Is the magnitude(number) odd?
+3. Is the magnitude(number) prime?
 
-**Case 0**: Red -> Red -> Red
+You are also asked to save all the test results in memory so that you can
+pass it to other functions if required.
 
-**Case 1**: Black -> Red -> Red
+A simple implementation would be:
+```c
+#include <stdio.h>
 
-**Case 2**: Red -> Black -> Red
+// fill in the code
+int checkPos(int x){ };
+int checkOdd(int x){ };
+int checkPrime(int x){ };
 
-**Case 3**: Black -> Black -> Red
+int main(void) {
+	int isPos, isOdd, isPrime;
+	int x;
+	printf("Enter a number: ");
+	scanf("%d", &x);
 
-Find the probabilities of each individual cases, and add them up to get $\frac{32}{55}$.
+	isPos = checkPos(x);
+	isOdd = checkOdd(x);
+	isPrime = checkPrime(x);
+	
+}
+```
+So here, we have saved the answer to each result in 3 int variables. So basically,
+it takes up 12 bytes(96 bits) just to store 3 results. It has a large memory footprint
+and there is actually a better way to acheive the same result by utilising individual bits
+of an integer variable to represent the result.
+
+We can make a 8 bit unsigned int (`uint8_t`) and utilise each individual bit of that
+integer to store a binary result(Notice that the answer to all the questions is binary Yes/No).
 
 
-#### But there is another way of solving this question. Its not easier, per se, but much more interesting.
+```c
+#include <stdio.h>
 
-Instead of thinking that the balls will either be of one discrete color, think of the color as "non-discrete"
-property, i.e, a ball can have a certain % of red and remaining % of black.
+// fill in the code
+int checkPos(int x){ };
+int checkOdd(int x){ };
+int checkPrime(int x){ };
 
-```mdx
-Urn A -> 6 red + 4 black
+int main(void) {
+	uint8_t flags = 0;
+	int x;
+	printf("Enter a number: ");
+	scanf("%d", &x);
+}
+```
+Here, bitwise representation of `flags` is just : `00000000`
+
+We can use the 3 right most bits to store the result of the questions.
+For example, if `x` is postive and odd but not prime, then `flag` should be:
+
+`00000011`
+
+last bit: isPositive?
+
+second last bit: isOdd?
+
+third last bit: isPrime?
+
+The methods that we will be using to change individual bits of `flags` is called
+[Bitmasking](https://en.wikipedia.org/wiki/Mask_(computing)).
+
+------------------
+
+Lets see some common Bitmask operations:
+
+### 1. Turning ON bits
+To turn on a bit in any particular location is basically changing that bit value to 1.
+We will use the bitwise `OR` for that.
+
+In the above case, since `x` is postive, we need to turn of the last bit.
+Take the bitwise `OR` of `flags` and a number whose last bit is 1 and all other bits are 0.
+
+```c
+flags = flags | (1<<0)
+```
+So here,
+
+```
+flags --> 00000000
+(1<<0)--> 00000001
+========================== OR
+flags --> 00000001
 ```
 
-If I were to choose any random ball from Urn A, I could imagine that ball to have 0.6 red and 0.4 black property (individual probabilities 
-of choosing red and black balls respectively). In other words, as long as you donot observe the color of the picked ball, it will be in
-superposition of both red and black.( *Note that this does not mean that the actual ball is both red and black. It just a simple way of 
-adding above cases(possibilities) in just one step* )
+Similarly, for turning on the second last bit:
 
-Forget about the balls being discrete. Think only about the color. When I pick any random ball from Urn A and put it in Urn B,
-the probabilities(of selecting colored balls) are hampered in both Urns. A ball is removed from Urn A, so red and black properties decreases.
-A ball is added in Urn B, so red and black properties increases.
+```c
+flags = flags | (1<<1)
+```
+So here,
 
 ```
-Urn A -> (6 - 0.6)red + (4 - 0.4)black = 5.4 red balls + 3.6 black balls = 9 balls
+flags --> 00000000
+(1<<1)--> 00000010
+========================== OR
+flags --> 00000010
 ```
 
-```
-Urn B -> (4 + 0.6)red + (6 + 0.4)black = 4.6 red balls + 6.4 black balls = 11 balls
-```
+We can also turn on multiple bits at the same time:
 
-#### Now, we need to do the same step again; this time, from Urn B to Urn A.
-
-If I were to now pick one random ball from Urn B, it will have (4.6/11 red + 6.4/11 black).
-
-Again, Picking this ball and putting it in Urn A will hamper the probabilities of both urns.
-
-```
-Urn A -> (5.4 + 4.6/11)red balls + (3.6 + 6.4/11)black balls = 10 balls
+```c
+flags = flags | (1<<0) | (1<<1)
 ```
 
 ```
-Urn B -> (4.6 - 4.6/11)red balls + (6.4 - 6.4/11)black balls = 10 balls
+flags --> 00000000
+(1<<0)--> 00000001
+(1<<1)--> 00000010
+========================== OR
+flags --> 00000011
 ```
 
-Now, it is the last part of the question. If we pick one ball from Urn A, find the probability
-that it is red.
+-------------------------------
 
-------------
-While the solution might seem a bit long and confusing, if you use diagrams, it will become much shorter(than the first solution).
+### 2. Turning OFF bits
+
+We can turn off bits, by using the bitwise `AND` and `~`(bitwise complement) operators.
+
+Suppose, the current state of `flags` is `00000011` and we want to turn off
+the second last bit.
+
+```c
+flags = flags & ~(1<<1)
+```
+
+```
+flags -->  00000011
+~(1<<1)--> 11111101
+========================== AND
+flags -->  00000001
+```
+
+--------------------
+
+### 3. Toggling bits
+Toggling bits basically means to toggle(inverse) the state of a particular bit.
+If the bit is ON, turn it OFF and vice versa.
+
+It can be acheived by using the `XOR` operator.
+
+Suppose we want to toggle the second last bit of `00000011`
+
+```c
+flags = flags ^ (1<<1)
+```
+
+```
+flags -->  00000011
+(1<<1)-->  00000010
+========================== XOR
+flags -->  00000001
+```
+
+Now, lets toggle the third last bit:
+
+
+```c
+flags = flags ^ (1<<2)
+```
+
+```
+flags -->  00000001
+(1<<2)-->  00000100
+========================== XOR
+flags -->  00000101
+```
+
+----------------
+
+### 4. Querying the status of bits.
+
+Now that we know how to mask individual bits, its also important
+to know how to actually query the state of bit in a particular location.
+
+We use the `AND` operator for this. Lets say our flag is `00000111`
+
+We need to know the state of third last bit.
+
+```c
+query = flags & (1<<2)
+```
+
+```
+flags -->  00000111
+(1<<2)-->  00000100
+========================== AND
+query -->  00000100
+```
+
+By comparing `query` with `(1<<2)`, we can know the state:
+
+```c
+if (query == (1<<2)){
+// third last bit is ON.
+}
+```
+---------------
+
+Using all the above bitmasking functions, we can write a cleaner code with less
+memory footprint. Our original code would look like:
+
+
+```c
+#include <stdio.h>
+#include <stdint.h>
+
+#define ISPOS (1<<0)
+#define ISODD (1<<1)
+#define ISPRIME (1<<2)
+
+// fill in the code such 
+// that each function returns 
+// corresponding macro.
+int checkPos(int x){
+	if (x > 0)
+		return ISPOS;
+	else
+		return 0;
+};
+
+int checkOdd(int x){ };
+int checkPrime(int x){ };
+
+int main(void) {
+	uint8_t flags = 0;
+	int x;
+	printf("Enter a number: ");
+	scanf("%d", &x);
+
+	flags |= checkPos(x) | checkOdd(x) | checkPrime(x);
+
+}
+```
+

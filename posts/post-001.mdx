@@ -4,11 +4,12 @@ date: 22 Nov 2021
 slug: git-bisect
 draft: false
 ---
+
 # `git bisect`
 
 Ever faced a situation where you made multiple commits to your project only to break a feature which you are sure it worked properly before you went on the commit spree?
 
-How on earth do you even plan to begin debugging the code in such a scenario? 
+How on earth do you even plan to begin debugging the code in such a scenario?
 
 One could go on a brute force approach but wouldn't it be much easier(to debug) if git just tells you which commit messed up your feature?
 
@@ -18,7 +19,7 @@ Suppose I have a commit history as shown below:
 
 ![Git Log](/post-001/img.d/1.png)
 
-Lets say my feature worked properly in `29aa243`. I want to find which commit between  `29aa243` and `d3bf6d2` broke my feature.
+Lets say my feature worked properly in `29aa243`. I want to find which commit between `29aa243` and `d3bf6d2` broke my feature.
 
 Before beginning to bisect the commits, lets get a basic understanding of the involved commands
 
@@ -27,7 +28,8 @@ Before beginning to bisect the commits, lets get a basic understanding of the in
 ```sh
 git bisect start
 ```
-This would start a bisecting session where you have to test your feature and tell git if it works fine or is still broken. 
+
+This would start a bisecting session where you have to test your feature and tell git if it works fine or is still broken.
 
 ```sh
 git bisect good [optional commit] # If the feature works fine
@@ -38,13 +40,13 @@ This is a simple logic graph of the process:
 
 ![Logic Graph](/post-001/img.d/2.png)
 
-Now, We have to first initialize which commit is `good` and which is `bad` . In this scenario, my `d3bf6d2` (current HEAD) is bad and `29aa243` is good. Do this with the help of commands given above 
+Now, We have to first initialize which commit is `good` and which is `bad` . In this scenario, my `d3bf6d2` (current HEAD) is bad and `29aa243` is good. Do this with the help of commands given above
 
 ![Git bisect](/post-001/img.d/3.png)
 
-Now test your feature and subsequently go through the logic graph given above(**Note: It is very important that you donot begin to commit on the codebase in a Bisecting Session. Since the HEAD remains in a detached state in such session, it would give you a hard time fixing everything later. See the last part of this article on how to exit Bisecting Session**). 
+Now test your feature and subsequently go through the logic graph given above(**Note: It is very important that you donot begin to commit on the codebase in a Bisecting Session. Since the HEAD remains in a detached state in such session, it would give you a hard time fixing everything later. See the last part of this article on how to exit Bisecting Session**).
 
-In the end of all revisions, git will tell which  commit broke your feature :]
+In the end of all revisions, git will tell which commit broke your feature :]
 
 ![Git Bisect 2](/post-001/img.d/4.png)
 

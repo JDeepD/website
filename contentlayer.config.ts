@@ -37,7 +37,7 @@ type Theme =
   | "vitesse-dark"
   | "vitesse-light";
 
-const currentTheme: Theme = "github-dark-dimmed"
+const currentTheme: Theme = "github-dark-dimmed";
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
