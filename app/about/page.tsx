@@ -58,7 +58,7 @@ const socials = [
 export default function About() {
   return (
     <div>
-      <main className="w-5/6 mx-auto my-auto font-bold text-4xl mt-8">
+      <main className="w-5/6 mx-auto my-auto font-bold text-4xl mt-8 mb-2">
         <div className="text-4xl">About me</div>
         <div className="text-lg font-normal mt-4">
           I am a Third year undergraduate at NIT Silchar who loves exploring new
