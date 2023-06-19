@@ -1,7 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 interface Props {
   original: string;
   text: string;
@@ -13,7 +9,6 @@ const generateRandomLetters = (
   text: string,
   setText: any
 ) => {
-  console.log("original", original);
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let iterations = 0;
   let interval = setInterval(() => {
