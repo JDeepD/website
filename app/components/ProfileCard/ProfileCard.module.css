@@ -17,7 +17,6 @@
   font-family: "Anybody", cursive;
   width: 30rem;
   height: 15rem;
-  /* border: 2px solid rgba(11, 241, 173, 0.5); */
   border: 2px solid #082f49;
   border-radius: 5px;
   background-color: #09090b;
@@ -25,15 +24,14 @@
   animation: changeshadow infinite cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-/* .container::after {
-  box-shadow: 1px 1px 500px #1d4ed8;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+@media screen and (max-width: 768px) {
+  .container {
+    width: 20rem;
+    height: fit-content;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+  }
 }
-
-.container::after:hover {
-  opacity: 1;
-} */
 
 .name {
   font-weight: 500;
