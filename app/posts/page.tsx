@@ -9,7 +9,7 @@ export default function Blog() {
       <div className="mt-6 flex justify-center font-extrabold text-6xl">Posts</div>
       <br />
       <div className="flex justify-center">
-        <div className="flex flex-col w-1/2 items-start gap-3">
+        <div className="flex flex-col max-w-3xl mx-8 items-start gap-3">
           {allPosts.map((item) => (
             <BlogPost
               title={item.title}
