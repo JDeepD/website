@@ -2,6 +2,7 @@ import { format, parseISO } from 'date-fns'
 import { allPosts } from 'contentlayer/generated'
 import { useMDXComponent } from 'next-contentlayer/hooks'
 import { notFound } from 'next/navigation'
+import CommentBoxWrapped from '@/app/components/Comment'
 
 export const generateStaticParams = async () => allPosts.map((post) => ({ slug: post._raw.flattenedPath }))
 
@@ -29,6 +30,8 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
       <div className="[&>*]:mb-3 [&>*:last-child]:mb-0 px-4 prose prose-slate dark:prose-invert prose-a:text-blue-700 mx-auto" >
         <MDXContent />
       </div>
+      <br />
+      <CommentBoxWrapped />
     </article>
   )
 }
