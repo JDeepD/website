@@ -10,7 +10,7 @@ async function deleteComment(req: NextRequest, res: NextResponse) {
   const authorization = headersList.get("authorization");
   const referer = headersList.get("referer");
   const url = clearUrl(referer as string);
-  const { comment }: { url: string; comment: Comment } = await req.json();
+  const { comment } = await req.json();
 
   if (!comment || !authorization) {
     return NextResponse.json({ error: "Missing param" });
