@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import type { Comment } from "./interfaces";
 import redis from "./redis";
@@ -10,7 +9,10 @@ async function fetchComments(req: NextRequest, res: NextResponse) {
   const referer = headersList.get("referer");
   const url = clearUrl(referer as string);
   if (!redis) {
-    return NextResponse.json({ error: "Redis connection failed" });
+    return NextResponse.json(
+      { error: "Redis connection failed" },
+      { status: 500 }
+    );
   }
   try {
     const rawComments = await redis.lrange(url, 0, -1);
@@ -20,9 +22,9 @@ async function fetchComments(req: NextRequest, res: NextResponse) {
       delete comment.user.email;
       return comment;
     });
-    return NextResponse.json(comments);
+    return NextResponse.json(comments, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: error });
+    return NextResponse.json({ message: error }, { status: 500 });
   }
 }
 

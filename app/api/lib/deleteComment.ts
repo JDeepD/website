@@ -23,12 +23,14 @@ async function deleteComment(req: NextRequest, res: NextResponse) {
     const user: User = await getUser(authorization);
     if (!user) return NextResponse.json({ error: "Unauthorized" });
     comment.user.email = user.email;
+    console.log(comment)
     const isAdmin = process.env.NEXT_PUBLIC_AUTH0_ADMIN_EMAIL === user.email;
     const isAuthor = user.sub === comment.user.sub;
     if (!isAdmin && !isAuthor) {
       return NextResponse.json({ error: "Unauthorized" });
     }
-    await redis.lrem(url, 0, JSON.stringify(comment));
+    const result = await redis.lrem(url, 0, JSON.stringify(comment));
+    console.log(result);
     return NextResponse.json({ message: "Comment deleted successfully." });
   } catch (error) {
     return NextResponse.json({ error: "Unexpected error occurred." });

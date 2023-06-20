@@ -9,10 +9,10 @@ type CommentListProps = {
   onDelete: (comment: Comment) => Promise<void>;
 };
 
-export default function CommentList({ comments, onDelete }: CommentListProps) {
+const CommentList = ({ comments, onDelete }: CommentListProps)  => {
   const { user } = useAuth0();
   return (
-    <div className="space-y-6 mt-10 flex flex-col items-center">
+    <div className="space-y-6 mt-10 w-full flex flex-col items-center">
       {comments &&
         comments.map((comment) => {
           const isAuthor = user && user.sub === comment.user.sub;
@@ -56,3 +56,5 @@ export default function CommentList({ comments, onDelete }: CommentListProps) {
     </div>
   );
 }
+
+export default CommentList;

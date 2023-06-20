@@ -36,8 +36,6 @@ export default function ProfileCard() {
   const [resume, setResume] = useState("Resume");
   const [projects, setProjects] = useState("Projects");
   const [blog, setBlog] = useState("Blog");
-  const [selected, setSelected] = useState(false);
-  const date = new Date();
   return (
     <motion.div
       whileHover={{ scale: 1.2 }}
@@ -55,7 +53,7 @@ export default function ProfileCard() {
         className={styles.container}
       >
         <div className="flex justify-center px-5 pt-2">
-          <span className={styles.name} onClick={() => setSelected(() => true)}>
+          <span className={styles.name}>
             <GlitchText original="JDeepD" text={jdeepd} setText={setJdeepd} />
           </span>
         </div>

@@ -5,7 +5,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export default function useComments() {
+const useComments = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [text, setText] = useState("");
   const { data: comments, mutate } = useSWR<Comment[]>(
@@ -36,8 +36,8 @@ export default function useComments() {
   const onDelete = async (comment: Comment) => {
     const token = await getAccessTokenSilently();
     try {
-      await fetch("/api/comment", {
-        method: "DELETE",
+      await fetch("/api/comment/delete", {
+        method: "POST",
         body: JSON.stringify({ comment }),
         headers: {
           Authorization: token,
@@ -51,3 +51,5 @@ export default function useComments() {
   };
   return { text, setText, comments, onSubmit, onDelete };
 }
+
+export default useComments;

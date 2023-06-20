@@ -12,20 +12,25 @@ async function createComment(req: NextRequest, res: NextResponse) {
   const referer = headersList.get("referer");
   const url = clearUrl(referer as string);
   const { text } = await req.json();
-  await redis.lpush("From blog", text);
   if (!authorization) {
-    return NextResponse.json({ error: "Unauthorized" });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   if (!text) {
-    return NextResponse.json({ error: "Missing required parameter(s)" });
+    return NextResponse.json(
+      { error: "Missing required parameter(s)" },
+      { status: 400 }
+    );
   }
   if (!redis) {
-    return NextResponse.json({ error: "Redis connection failed" });
+    return NextResponse.json(
+      { error: "Redis connection failed" },
+      { status: 500 }
+    );
   }
   try {
     const user = await getUser(authorization);
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const { name, picture, email, sub } = user;
     const comment: Comment = {
@@ -33,12 +38,13 @@ async function createComment(req: NextRequest, res: NextResponse) {
       created_at: Date.now(),
       url,
       text: text,
-      user: { name, picture, email, sub },
+      // Make sure email is the last param!
+      user: { name, picture, sub, email },
     };
     await redis.lpush(url, JSON.stringify(comment));
-    return NextResponse.json(comment);
+    return NextResponse.json(comment, { status: 200 });
   } catch (e) {
-    return NextResponse.json({ error: "Unexpected Error" });
+    return NextResponse.json({ error: "Unexpected Error" }, { status: 500 });
   }
 }
 
