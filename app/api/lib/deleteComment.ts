@@ -17,23 +17,33 @@ async function deleteComment(req: NextRequest, res: NextResponse) {
   }
 
   if (!redis) {
-    return NextResponse.json({ error: "Redis connection failed" });
+    return NextResponse.json(
+      { error: "Redis connection failed" },
+      { status: 500 }
+    );
   }
   try {
     const user: User = await getUser(authorization);
-    if (!user) return NextResponse.json({ error: "Unauthorized" });
+    if (!user)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     comment.user.email = user.email;
-    console.log(comment)
+    console.log(comment);
     const isAdmin = process.env.NEXT_PUBLIC_AUTH0_ADMIN_EMAIL === user.email;
     const isAuthor = user.sub === comment.user.sub;
     if (!isAdmin && !isAuthor) {
-      return NextResponse.json({ error: "Unauthorized" });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const result = await redis.lrem(url, 0, JSON.stringify(comment));
     console.log(result);
-    return NextResponse.json({ message: "Comment deleted successfully." });
+    return NextResponse.json(
+      { message: "Comment deleted successfully." },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({ error: "Unexpected error occurred." });
+    return NextResponse.json(
+      { error: "Unexpected error occurred." },
+      { status: 500 }
+    );
   }
 }
 
