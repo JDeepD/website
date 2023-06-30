@@ -22,15 +22,31 @@ export default function Blog() {
       <br />
       <div className="flex justify-center">
         <div className="flex flex-col max-w-3xl mx-8 items-start gap-3">
-          {Posts.map((item) => (
-            <BlogPost
-              title={item.title}
-              date={item.date}
-              url={item.url}
-              readTime={item.readTime.text}
-              key={item._id}
-            />
-          ))}
+          {Posts.map((item) => {
+            if (item.redirect === "") {
+              return (
+                <BlogPost
+                  title={item.title}
+                  date={item.date}
+                  url={item.url}
+                  readTime={item.readTime.text}
+                  key={item._id}
+                />
+              );
+            } else {
+              return (
+                <div className="flex" key={item._id}>
+                  <Link
+                    className="text-2xl font-extrabold max-w-fit hover:text-sky-600 transition-all cursor-pointer"
+                    href={item.redirect}
+                  >
+                    {item.title}
+                  </Link>
+                  <span className="text-green-600">(redirected)</span>
+                </div>
+              );
+            }
+          })}
         </div>
       </div>
     </div>
