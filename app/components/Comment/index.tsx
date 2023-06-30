@@ -15,13 +15,4 @@ function CommentBox() {
   );
 }
 
-export default function CommentBoxWrapped() {
-  return (
-    <Auth0Provider
-      clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID as string}
-      domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN as string}
-    >
-      <CommentBox />
-    </Auth0Provider>
-  );
-}
+export default CommentBox;

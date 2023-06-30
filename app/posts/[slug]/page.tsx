@@ -3,7 +3,7 @@ import { allPosts } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import CommentBoxWrapped from "@/app/components/Comment";
+import CommentBox from "@/app/components/Comment";
 
 export const generateStaticParams = async () =>
   allPosts.map((post) => ({ slug: post._raw.flattenedPath }));
@@ -16,7 +16,7 @@ export const generateMetadata = ({ params }: { params: { slug: string } }) => {
 
 const PostLayout = ({ params }: { params: { slug: string } }) => {
   const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
-  if (!post) notFound();
+  if (!post || post?.publish === false) notFound();
   const MDXContent = useMDXComponent(post.body.code);
   return (
     <article className="mx-auto max-w-fit py-8">
@@ -29,13 +29,13 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
           {format(parseISO(post.date), "d LLLL, yyyy")}
         </time>
         <div className="mb-1 text-base text-gray-600">{post.readTime.text}</div>
-        <h1 className="text-3xl font-bold px-8">{post.title}</h1>
+        <h1 className="text-3xl font-bold px-8 whitespace-pre-wrap w-2/3 mx-auto">{post.title}</h1>
       </div>
       <div className="[&>*]:mb-3 [&>*:last-child]:mb-0 px-4 prose prose-slate dark:prose-invert prose-a:text-blue-700 mx-auto">
         <MDXContent />
       </div>
       <br />
-      <CommentBoxWrapped />
+      <CommentBox />
     </article>
   );
 };
