@@ -24,7 +24,11 @@ export default function BlogPost({
         <div className="font-normal max-w-fit text-base text-gray-600">
           {format(parseISO(date), "LLLL d, yyyy")}
         </div>
-        <div className="font-normal max-w-fit text-base text-gray-600">
+        <div
+          className={`font-normal max-w-fit text-base ${
+            readTime === "Redirect" ? "text-green-600" : "text-gray-600"
+          }`}
+        >
           {readTime}
         </div>
       </div>

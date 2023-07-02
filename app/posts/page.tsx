@@ -35,15 +35,13 @@ export default function Blog() {
               );
             } else {
               return (
-                <div className="flex" key={item._id}>
-                  <Link
-                    className="text-2xl font-extrabold max-w-fit hover:text-sky-600 transition-all cursor-pointer"
-                    href={item.redirect}
-                  >
-                    {item.title}
-                  </Link>
-                  <span className="text-green-600">(redirected)</span>
-                </div>
+                  <BlogPost
+                    title={item.title}
+                    date={item.date}
+                    url={item.redirect}
+                    readTime={"Redirect"}
+                    key={item._id}
+                  />
               );
             }
           })}
