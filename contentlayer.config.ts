@@ -47,12 +47,16 @@ export const Post = defineDocumentType(() => ({
     title: { type: "string", required: true },
     date: { type: "date", required: true },
     publish: { type: "boolean", default: false },
-    redirect: {type: "string", default: ""},
+    redirect: { type: "string", default: "" },
   },
   computedFields: {
     slug: {
       type: "string",
-      resolve: (doc) => doc._raw.sourceFileName.replace(".mdx", ""),
+      resolve: (doc) =>
+        doc.title
+          .toLowerCase()
+          .replace(/ /g, "-") // replace spaces with hyphens
+          .replace(/[^\w-]+/g, ""), // remove non-word chars as they can cause bugs with the url
     },
     url: {
       type: "string",

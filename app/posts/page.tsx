@@ -28,7 +28,7 @@ export default function Blog() {
                 <BlogPost
                   title={item.title}
                   date={item.date}
-                  url={item.url}
+                  url={"/posts/" + item.slug}
                   readTime={item.readTime.text}
                   key={item._id}
                 />

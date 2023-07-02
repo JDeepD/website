@@ -6,16 +6,18 @@ import Link from "next/link";
 import CommentBox from "@/app/components/Comment";
 
 export const generateStaticParams = async () =>
-  allPosts.map((post) => ({ slug: post._raw.flattenedPath }));
+  allPosts.map((post) => ({ slug: post.slug }));
 
 export const generateMetadata = ({ params }: { params: { slug: string } }) => {
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
+  const post = allPosts.find((post) => post.slug === params.slug || post._raw.flattenedPath === params.slug);
   if (!post) notFound();
   return { title: post.title };
 };
 
 const PostLayout = ({ params }: { params: { slug: string } }) => {
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
+  const post = allPosts.find((post) => {
+    return post._raw.flattenedPath === params.slug || post.slug === params.slug
+  });
   if (!post || post?.publish === false) notFound();
   const MDXContent = useMDXComponent(post.body.code);
   return (
