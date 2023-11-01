@@ -16,7 +16,7 @@ export default function CommentForm({
   return (
     <form onSubmit={onSubmit}>
       <textarea
-        className="flex w-1/2 m-auto max-h-40 p-3 rounded resize-y bg-gray-200 text-gray-900 placeholder-gray-500"
+        className="flex md:sm:w-1/2 w-11/12 m-auto max-h-40 p-3 rounded resize-y bg-gray-200 text-gray-900 placeholder-gray-500"
         rows={2}
         placeholder={
           isAuthenticated

@@ -1,0 +1,132 @@
+---
+title: "Configuring proxies is a mess. Not anymore"
+date: 1 Nov 2023
+publish: false
+---
+
+> So you are a college student and you realize that your entire college network is behind a proxy.
+> So every single tool that you use need to be configured to use that proxy. Must be a mess if you
+> are a developer, right?
+
+Now, as a developer, you use a variety of softwares that interact with the network. Everything is fine when you are
+on a network which does not require any fancy proxy configurations. All your applications play well
+and you have a carefree life.
+
+So here is the thing about softwares. Many of them can be configured to use a proxy server. (Yeah, there are some softwares which donot work under a proxy at all).
+
+Now things are not uniform here. For some softwares (like git and npm) you can set a proxy server in the software config itself.
+Whereas for some other softwares (like Chrome or Prisma) you need to set the environment variables.
+
+------------------------
+
+For npm and git, there are basically 4 places where npm looks for a proxy config (in that order): 
+1. CLI flag
+2. Local Config
+3. Global Config
+4. Environment Variables
+
+First, it will see if there is a CLI flag for proxy. If there is, it will use that proxy. Else it will see the Local Config
+to find a proxy config and so on.
+
+If you set an environment variable to use the proxy `http://proxy1:8000` and use the local config to set the proxy `http://proxy2:8080`
+Then git/npm is going the use the local config proxy (`http://proxy2:8080`). Priority wise:
+
+CLI Flag > Local Config > Global Config > Env Vars
+
+### CLI Flag
+```sh
+# Use the proxy http://host:port
+npm --proxy "http://host:port" <rest of the command>
+# Donot use any proxy
+npm --no-proxy <rest of the command>
+
+# Use the proxy http://host:port
+git -c "http.proxy=http://host:port" <rest of the command>
+# Donot use any proxy
+git -c "http.proxy=" <rest of the command>
+```
+
+### Local Config
+
+#### npm
+In your project root directory(the directory having the `package.json` file), create a `.npmrc` file with the following contents:
+
+```sh
+# .npmrc file
+# Use the proxy http://host:port
+proxy="http://host:port"
+# Donot use any proxy
+proxy=""
+```
+#### git
+In your project root directory(the directory having the `.git` directory), create a `.git/config` file with the following contents:
+```sh
+[http]
+    proxy="http://host:port"
+```
+
+### Global Config
+To set the proxy config globally, run the following npm/git command:
+```sh
+# Use the proxy http://host:port
+npm config set proxy http://host:port
+git config --global http.proxy "http://host:port"
+git config --global https.proxy "http://host:port"
+```
+
+To remove the proxy,
+```sh
+npm config rm proxy
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
+### Environment Variables
+Environment varibles are kind of a mystery for some. Basically, these are key-value pairs that
+are loaded when the OS loads the shell. Its a big enough topic and is outside the scope of this blog so I
+will leave it upon the reader to research more on this.
+
+As a standard, there are 2 variables that you need to configure: `http_proxy` and `https_proxy`
+
+Now setting this variable is actually dependent on which shell you are using.
+
+#### Using a POSIX shell (bash, zsh, csh etc):
+```sh
+export http_proxy="http://host:port/"
+export https_proxy="http://host:port/"
+```
+To load these variables whenever you spawn a new shell, put the above commands in `~/.profile` or `~/.bashrc`(if using bash)
+or `~/.zshrc`(if using zsh).
+
+#### Using a non-POSIX shell (fish, powershell etc):
+In this scenario, you simply got to look up the docs for setting env vars in those shells since there is no proper standard.
+```sh
+# For fish, set a proxy
+set http_proxy "http://host:port"
+set https_proxy "http://host:port"
+# For fish, remove proxy
+set -e http_proxy
+set -e https_proxy
+```
+
+For Unix based OS, there is universal way of setting environment variables throughout the system
+(across all users and across all shells).
+Simply put the variables in `/etc/environment`
+
+```sh
+# File: /etc/environment
+http_proxy=http://host:port
+https_proxy=http://host:port
+```
+
+Now here is the thing, we come across many tools and each of them has their own commands of configuring the proxies.
+Often it becomes confusing and most of times we just forget it.
+
+Why don't we just write a script for it? It would be a massive time saver for the developer.
+
+Sure, you can do it on your own. But others have already done it so why not save some more time and use
+their script?
+
+Personally, For Unix systems (with POSIX shell) I prefer : [Proxyman](https://github.com/himanshub16/ProxyMan)
+
+For Windows, I tried finding some script but didn't find any so decided to write my own:

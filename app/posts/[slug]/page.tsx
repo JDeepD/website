@@ -31,7 +31,7 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
           {format(parseISO(post.date), "d LLLL, yyyy")}
         </time>
         <div className="mb-1 text-base text-gray-600">{post.readTime.text}</div>
-        <h1 className="text-3xl font-bold px-8 whitespace-pre-wrap w-2/3 mx-auto">{post.title}</h1>
+        <h1 className="text-3xl font-bold px-8 whitespace-pre-wrap w-full mx-auto">{post.title}</h1>
       </div>
       <div className="[&>*]:mb-3 [&>*:last-child]:mb-0 px-4 prose prose-slate dark:prose-invert prose-a:text-blue-700 mx-auto">
         <MDXContent />
