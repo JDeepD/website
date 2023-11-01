@@ -42,6 +42,11 @@ const nextConfig = {
         source: "/resume",
         destination: "https://drive.google.com/file/d/1uARDiv2rlOX4P4qSQhS4oRjWaC9O5NH1/view",
         permanent: true,
+      },
+      {
+        source: "/gitsession",
+        destination: "https://github.com/JDeepD/git-github-session",
+        permanent: true,
       }
     ]
   }
