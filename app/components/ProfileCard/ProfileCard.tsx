@@ -103,7 +103,7 @@ export default function ProfileCard() {
             <GlitchText original="Blog" text={blog} setText={setBlog} />
           </Link>
 
-          <Link href={"/about"} className="hover:text-blue-700">
+          <Link href={"/projects"} className="hover:text-blue-700">
             <GlitchText
               original="Projects"
               text={projects}
