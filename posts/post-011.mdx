@@ -1,0 +1,130 @@
+---
+title: Setting Up a Wireguard VPN service on AWS EC2 
+date: 2024-01-17
+publish: true
+---
+
+VPNs or Virtual Private Networks are a great way to secure your internet traffic and protect your privacy. 
+They are also a great way to bypass geo-restrictions and access content that is not available in your country.
+
+Lets build a VPN service using Wireguard on AWS EC2.
+
+## What is Wireguard?
+Wireguard is a modern VPN protocol that is fast, secure and easy to setup. You can read in detail about
+Wireguard from [here](https://www.wireguard.com/#conceptual-overview). But in short, here is brief of how Wireguard
+works:
+
+1. There is a VPN server and clients(peers) that connect to it.
+2. A pair of public-private keys are generated on the server and all its peers.
+3. The server and peers exchange their public keys.
+4. Thats it. The server and peers can now communicate with each other.
+
+Well, there is more to it. But this is the basic idea.
+
+On the VPN server, we need to do some configuration to allow the peers to connect to it.
+
+An Example Server-Client Config looks like this:
+```ini
+# /etc/wireguard/wg0.conf : VPN Server
+[Interface]
+Address = 10.0.0.1/32
+ListenPort = 51820
+PrivateKey = .... # Server Private Key
+
+[Peer]
+PublicKey = .... # Client Public Key
+AllowedIPs = 10.0.0.2/32
+```
+
+```ini
+# /etc/wireguard/wg0.conf : VPN Client
+[Interface]
+Address = 10.0.0.2/32
+PrivateKey = .... # Client Private Key
+ListenPort = (random)
+
+[Peer]
+PublicKey = .... # Server Public Key
+Endpoint = (server-ip):51820
+AllowedIPs = 0.0.0.0/0
+```
+
+Now, lets get an overview of how this setup works.
+
+1. Lets assume the server IP address is 10.11.12.13.
+2. Now, the client has to connect to it. So, it sends a packet to the server. The packet is created with
+the source IP of the client(`10.0.0.2`), encrypted using the public of the server. Now this packet is sent to the configured endpoint of the server (i.e `10.11.12.13:51820`)
+3. The server receives the packet and checks if the source IP is in the list of allowed IPs. If it is, then it decrypts the packet
+and forwards it to the upper layers, else it drops the packet. Also, the server remembers the IP address(and port) of the client
+when it receives the first packet from it.
+4. Now, when the server has to send some response, it creates a packet with the source IP of the server(`10.0.0.1/32`) and encrypts
+it using the public key of the peer. Now, since the client must have connected to the server before, therefore the server also knows the
+endpoint(and port) for that peer. So, it sends the packet to the endpoint of the peer.
+5. The client receives the packet and decrypts it. Checks if the source IP is in the list of allowed IPs. If it is, then it forwards
+the packet to the upper layers, else it drops the packet.
+
+## Hands On
+
+1. Create an AWS EC2 instance (choose `t2.micro` if you don't want to pay anything). Make sure you have SSH access to it. I will be
+using Amazon Linux AMI for this.
+2. After creating your instance, go to security tab and allow ingress traffic on port 51820(UDP) from anywhere.
+3. SSH into your instance.
+
+```sh
+# Install Wireguard
+sudo dnf install wireguard-tools
+
+# Generate Private and Public Keys(both in server and client) and store them in a file
+wg genkey | tee privatekey | wg pubkey > publickey
+```
+4. Next, configure wireguard configuration file: `/etc/wireguard/wg0.conf`
+```ini
+[Interface]
+Address = 10.0.0.1/32 # Optional, If not specified, Wireguard will assign an IP address from the network interface for wireguard
+PrivateKey = <server-private-key> # Replace with the private key of the server
+ListenPort = 51820
+
+# Replace <client-public-key> with the public key of the WireGuard client
+[Peer]
+PublicKey = <client-public-key> # Replace with the public key of the client
+AllowedIPs = 10.0.0.2/32 # This is the IP address of the client in our VPN network
+```
+
+5. Next step is to create a network interface through which wireguard can send packets.
+
+```sh
+# Create a network interface
+sudo ip link add dev wg0 type wireguard
+
+# Assign an IP address to the network interface
+sudo ip addr add 10.0.0.1/24 dev wg0
+
+# Enable the network interface
+sudo ip link set up dev wg0
+```
+
+6. Confirm that `wg0` network interface is up using `ip -c a`.
+7. Next In your client, create a similar configuration file with endpoint of the server and the public key of the server.
+
+Once that is done, in the server route all IPv4 traffic through your wireguard interface.
+```sh
+# Enable IP forwarding
+sudo sysctl -w net.ipv4.ip_forward=1
+
+# Set up firewall rules for traffic incoming on wireguard interface
+sudo iptables -A FORWARD -i wg0 -j ACCEPT
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE  # Replace eth0 with your internet-facing interface
+sudo iptables-save > /etc/iptables/rules.v4
+```
+
+8. Now, start the wireguard service on the server and client.
+```sh
+sudo wg-quick up wg0
+
+# Enable as a system daemon
+sudo systemctl enable wg-quick@wg0
+```
+
+<div style={{display: "flex", width: "100%", justifyContent: "center"}} >
+<b> --- Done ---</b>
+</div>

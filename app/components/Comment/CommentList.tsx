@@ -11,6 +11,9 @@ type CommentListProps = {
 
 const CommentList = ({ comments, onDelete }: CommentListProps)  => {
   const { user } = useAuth0();
+  if(process.env.NODE_ENV === "development") {
+    return  <></>
+  }
   return (
     <div className="space-y-6 mt-10 w-full flex flex-col items-center">
       {comments &&
