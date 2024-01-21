@@ -1,6 +1,7 @@
 "use client";
 import "./globals.css";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { Analytics } from '@vercel/analytics/react';
 
 export default function RootLayout({
   children,
@@ -15,6 +16,7 @@ export default function RootLayout({
       >
         <body>{children}</body>
       </Auth0Provider>
+      <Analytics />
     </html>
   );
 }
