@@ -35,6 +35,7 @@ export default function ProfileCard() {
   const [knowMore, setKnowMore] = useState("Know more");
   const [resume, setResume] = useState("Resume");
   const [projects, setProjects] = useState("Projects");
+  const [Jdeeplist, setjdeeplist] = useState("List");
   const [blog, setBlog] = useState("Blog");
   return (
     <motion.div
@@ -101,6 +102,14 @@ export default function ProfileCard() {
 
           <Link href={"/posts"} className="hover:text-blue-700">
             <GlitchText original="Blog" text={blog} setText={setBlog} />
+          </Link>
+
+          <Link href={"/list"} className="hover:text-blue-700">
+            <GlitchText
+              original="List"
+              text={Jdeeplist}
+              setText={setjdeeplist}
+            />
           </Link>
 
           <Link href={"/projects"} className="hover:text-blue-700">

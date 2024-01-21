@@ -44,6 +44,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/list",
+        destination: "https://raindrop.io/JDeepD/blogs-36252712",
+        permanent: true,
+      },
+      {
         source: "/gitsession",
         destination: "https://github.com/JDeepD/git-github-session",
         permanent: true,

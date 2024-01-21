@@ -53,7 +53,7 @@ Now, lets get an overview of how this setup works.
 
 1. Lets assume the server IP address is 10.11.12.13.
 2. Now, the client has to connect to it. So, it sends a packet to the server. The packet is created with
-the source IP of the client(`10.0.0.2`), encrypted using the public of the server. Now this packet is sent to the configured endpoint of the server (i.e `10.11.12.13:51820`)
+the source IP of the client(`10.0.0.2`), encrypted using the public key of the server. Now this packet is sent to the configured endpoint of the server (i.e `10.11.12.13:51820`)
 3. The server receives the packet and checks if the source IP is in the list of allowed IPs. If it is, then it decrypts the packet
 and forwards it to the upper layers, else it drops the packet. Also, the server remembers the IP address(and port) of the client
 when it receives the first packet from it.
