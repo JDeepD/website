@@ -1,0 +1,60 @@
+---
+title: How I took down GDSC Website - A DNS Nightmare
+date: 2024-01-29
+publish: true
+---
+
+**Some context** : I am in the Cloud Core Team of GDSC NIT Silchar and I am responsible 
+for maintaining the domains and making sure that [gdscnits.in](https://gdscnits.in) is up.
+
+**29th January 2024, 1:10 AM** : I receive a text that `gdscnits.in` is down. (I kind of knew instantly what might have caused it, keep reading further.)
+
+I checked `gdscnits.in` in my browser and it was indeed down. Checked the DNS Status and Oh Boy I was fucked:
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+    <img src="/post-012/dnsf.jpeg" alt="F DNS Records" width="90%"/>
+</div>
+
+**Some more context** : We bought `gdscnits.in` from GoDaddy but we externally manage the DNS records for it on Netlify (because it has a cooler UI, so why not, right?)
+
+I went to Netlify and everything looked perfect. There was nothing out of ordinary. Got `NETLIFY` and `NETLIFYv6` records pointed to `gdscnits.netlify.app`.
+
+You must be wondering, what the hell is `NETLIFY` and `NETLIFYv6` records. Well I was confused too and I didn't pay attention to it until now.
+
+DNS records are of many types. 2 most common ones are `A` records and `CNAME` records.
+
+`A` records: Maps Domain name to IPv4 Address
+
+`CNAME` records: Maps Domain name to Domain Name
+
+So where does `NETLIFY` record fit in it? Well, `NETLIFY` record is special type of record in Netlify DNS. It will return
+the IP address of the closest CDN node based on the IP address of the system making the DNS lookup. In short it returns an IP
+address but it may not be the same IP address always. It will depend on the location of the system making the DNS lookup.
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+    <img src="/post-012/dnsdig.png" alt="F DNS Records" width="90%"/>
+</div>
+
+Read more about this notorious `NETLIFY` record [here](https://answers.netlify.com/t/support-guide-what-are-the-netlify-and-netlifyv6-type-dns-records-how-do-i-delete-these-records/17430#h-2-these-records-dont-control-the-site-shown-5)
+
+Well, **what if** on top of the `NETLIFY` record, you have a `CNAME` record pointing to the same domain name? 
+The domain name indeed resolves to the value of `CNAME` record **but but but**, we cannot load the website.
+(I am yet to figure out why it doesn’t resolve).
+
+But I saw that in our DNS records and deleted the `NETLIFY` records(and kept the `CNAME` record). Website is still down.
+
+For the next 2 hours, I tried all permutations and combinations of DNS records like a sheep desperately trying to get
+the site up before dawn and act like nothing ever happened. But I failed miserably.
+
+The last resort was to nuke everything and start from scratch. I deleted all the DNS records, changed the nameservers
+back to GoDaddy's default NS and deleted the domain from Netlify.
+
+Added Netlify's NS back to GoDaddy and added the domain back to Netlify. It worked. Thank God!(It was almost 3AM by that time.)
+
+**Remember I said I kind of knew what might have caused the problem?**. Well that very same day, I was showing a bunch of juniors
+setting up and managing domains on Netlify. I wanted to create an `A` record for `xyz.gdscnits.in` pointing to some IP address.
+I forgot to add `xyz` to the sub-domain name and created an `A` record for `gdscnits.in` pointing to that IP address. I immediately realized
+the mistake and deleted the record. But I guess it was too late.
+
+**Lesson Learned** : Never mess with DNS records when you are sleepy. You will end up messing up everything.
+
