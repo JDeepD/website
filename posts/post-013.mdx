@@ -1,0 +1,107 @@
+---
+title: CORS! Understanding the Common Issues.
+date: 2024-02-11
+publish: true
+---
+
+CORS is one of the most common issues with APIs in general.
+
+Browsers have a security feature called `Same-Origin` Policy. This policy prevents a web page from making requests to a 
+different domain than the one that served the web page. 
+This is a security feature to prevent [Cross-Site Request Forgery (CSRF)](https://www.hacksplaining.com/exercises/csrf) attacks.
+
+TLDR, CSRF is an attack where a malicious website sends a request to a different website on behalf of the user.
+
+Basically, Forging a request and sending it on behalf of the user to the server. (It's more prevelant than you think).
+
+To protect against CSRF attacks, the browser implements the `Same-Origin` policy.
+
+`Origin` is defined as the combination of `protocol`, `host`, and `port`.
+If the `Origin` of the request and the `Origin` of the response are the same, the browser allows the request.
+
+For example, 
+
+| Same Origin?                | http://example.com/foo              | http://example.com/bar              | https://example.com/foo            | https://www.example.com/foo         |
+|-----------------------------|-------------------------------------|-------------------------------------|------------------------------------|-------------------------------------|
+| http://example.com/foo      | Yes (Same protocol, host and port)  | Yes (Same protocol, host and port)  | No. Protocol is different          | No. Protocol and Host are different |
+| http://example.com/bar      | Yes (Same protocol, host and port)  | Yes (Same protocol, host and port)  | No. Protocol is different          | No. Protocol and Host are different |
+| https://example.com/foo     | No. Protocol is different.          | No. Protocol is different           | Yes (Same protocol, host and port) | No. Host is different               |
+| https://www.example.com/foo | No. Protocol and Host are different | No. Protocol and Host are different | No. Host is different              | Yes (Same protocol, host and port)  |
+
+
+Now suppose the frontend has to make a request to the backend at `https://api.example.com/` and frontend is hosted
+at `https://www.example.com/`. When you invoke the `fetch` API of the browser, here is what happens:
+
+1. The browser before sending the actual request to the server, sends a `preflight` request to the server.
+2. A [preflight request](https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request) is an HTTP OPTIONS request
+([OPTIONS method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS) is just like other HTTP requests like GET, POST, PUT). But
+it is sent to the server primarily to ask if the server actually allows the original request to be sent.
+
+An OPTIONS request has the following headers:
+
+```http
+OPTIONS /profile/post/ HTTP/1.1
+Host: https://api.example.com
+...
+Origin: https://www.example.com
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: Content-Type
+```
+
+The `OPTIONS` request asks the server if it allows the `POST` request from `https://www.example.com` with the header `Content-Type`.
+
+The server responds with the following headers:
+
+```http
+HTTP/1.1 200 OK
+Server: Apache/2.0.61 (Unix)
+Access-Control-Allow-Origin: https://www.example.com
+Access-Control-Allow-Methods: POST, GET, OPTIONS
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Max-Age: 86400
+...
+```
+
+Here, in the preflight response, the server says that it allows the `POST`(along with `GET` and `OPTIONS`) request from `https://www.example.com` with the header `Content-Type`.
+
+If the server does not respond with the `Access-Control-Allow-Origin` header, 
+the browser will not send the actual request to the server and you will see the following error in the console:
+
+> Access to fetch at 'https://api.example.com/profile/post' from origin 
+'https://www.example.com' has been blocked by CORS policy: Response to preflight request doesn't 
+pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. 
+
+Therefore, the server has to respond with the `Access-Control-Allow-Origin` header for the `OPTIONS` request to allow the actual request
+to be made to the server.
+
+If you are Javascript developer, you might have used the [cors](https://github.com/expressjs/cors/) package in Node.js to enable CORS. This library abstracts
+out a lot of these `OPTIONS` request handling for you. While abstraction is good, but using this library without understanding
+CORS can lead to a lot of confusion.
+
+### Quick Note on expressjs-cors middleware
+
+The `cors` middleware in expressjs is used to enable CORS in the server. It is used generally as follows:
+
+```javascript
+...
+const corsOptions = {
+  origin: ,
+  credentials: ,
+}
+app.use(cors(corsOptions));
+...
+```
+
+1. The origin parameter is used to specify the origin from which the server allows requests. If you set it to `*`, it allows requests from all origins (**There is gotcha though**). You can
+also set it to a specific origin like `https://www.example.com` or to a regular expression to match multiple origins or to an array of
+allowed origins or to `true` which basically sets the `Access-Control-Allow-Origin` header to the `Origin` of the request (virtually same
+as setting it to "*").
+2. The credentials parameter is used to specify if the server allows credentials to be sent with the request. If you set it to `true`, the server will respond with the `Access-Control-Allow-Credentials` header set to `true`.
+Credentials are cookies, TLS client certificates, or authentication headers containing a username and password. By default, these credentials are not sent in cross-origin requests, and doing so can make a site vulnerable to CSRF attacks.
+
+** The gotcha with setting the `origin` to `*` is that you cannot set the `Access-Control-Allow-Credentials` header to `true`. 
+If you do, the browser will not allow the request. Therefore, if you have to send credentials with the request, 
+you have to set the `origin` to a specific origin and set the `credentials` to `true. 
+
+If you do want to allow requests from all origins and also send credentials, you have to set the `Access-Control-Allow-Origin` header to the `Origin` of the request in the server.
+This is simply done by setting the `origin` to `true` in the `cors` middleware.
