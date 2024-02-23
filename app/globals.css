@@ -4,7 +4,7 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 :root {
   font-family: "Inter", sans-serif;
@@ -17,12 +17,9 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
+  background: linear-gradient(to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 
   width: 100%;
   height: 100%;
@@ -32,7 +29,7 @@ code {
   counter-reset: line;
 }
 
-code > .line::before {
+code>.line::before {
   counter-increment: line;
   content: counter(line);
 
@@ -44,11 +41,11 @@ code > .line::before {
   color: gray;
 }
 
-code[data-line-numbers-max-digits="2"] > .line::before {
+code[data-line-numbers-max-digits="2"]>.line::before {
   width: 2rem;
 }
 
-code[data-line-numbers-max-digits="3"] > .line::before {
+code[data-line-numbers-max-digits="3"]>.line::before {
   width: 3rem;
 }
 
