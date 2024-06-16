@@ -9,23 +9,23 @@ import { motion } from "framer-motion";
 
 const socials = [
   {
-    image: "https://cdn.simpleicons.org/discord",
+    image: "https://cdn.simpleicons.org/discord/white",
     uri: "https://discord.gg/e6sFF3Q9rc",
   },
   {
-    image: "https://cdn.simpleicons.org/twitter",
+    image: "https://cdn.simpleicons.org/x/white",
     uri: "https://twitter.com/JdeepD07/",
   },
   {
-    image: "https://cdn.simpleicons.org/linkedin",
+    image: "https://cdn.simpleicons.org/linkedin/white",
     uri: "https://www.linkedin.com/in/jdeepd",
   },
   {
-    image: "https://cdn.simpleicons.org/stackoverflow",
+    image: "https://cdn.simpleicons.org/stackoverflow/white",
     uri: "https://stackoverflow.com/users/12982627/jdeep",
   },
   {
-    image: "https://cdn.simpleicons.org/github",
+    image: "https://cdn.simpleicons.org/github/white",
     uri: "https://github.com/jdeepd",
   },
 ];
