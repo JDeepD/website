@@ -46,7 +46,7 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
         <MDXContent />
       </div>
       <br />
-      <CommentBox />
+      {/* <CommentBox /> */}
     </article>
   );
 };
